@@ -3,9 +3,26 @@ import { Comment } from './Comment'
 import styles from './Post.module.css'
 import {format, formatDistanceToNow} from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
-import { useState } from 'react'
+import { ChangeEvent, FormEvent, useState } from 'react'
 
-export function Post({data}) {
+interface IPostProps {
+  data: IDataPost
+}
+
+interface IDataPost {
+  author:{
+    avatarUrl: string
+    role: string
+    name: string
+  }
+  content:{
+    type: string
+    content: string
+  }[]
+  publishedAt: Date
+}
+
+export function Post({data}: IPostProps) {
 
   const [comments, setComments] = useState([
     'Esse post é muito legal'
@@ -20,21 +37,21 @@ export function Post({data}) {
     addSuffix: true
   })
 
-  function handleSubmitComment(){
+  function handleSubmitComment(event: FormEvent){
     event.preventDefault()
     setComments([...comments,newCommentText ])
     setNewCommentText('')
   }
 
-  function handleChangeCommentText(){
+  function handleChangeCommentText(event: ChangeEvent<HTMLTextAreaElement>): void{
     event.target.setCustomValidity('')
     setNewCommentText(event.target.value)
   }
-  function onInvalidCommentText(){
+  function onInvalidCommentText(event: ChangeEvent<HTMLTextAreaElement>): void{
     event.target.setCustomValidity('Esse campo é obrigatório!')
   }
 
-  function deleteComment(commentToDelete){
+  function deleteComment(commentToDelete: string){
     const commentsWithoutDeletedOne = comments.filter(comment => {
       return comment !== commentToDelete
     })
@@ -59,11 +76,11 @@ export function Post({data}) {
       </header>
 
       <div className={styles.content}>
-       {data.content.map((line, index ) => {
+       {data.content.map((line) => {
         if (line.type === 'paragraph'){
-          return <p key={index}>{line.content}</p>
+          return <p key={line.content}>{line.content}</p>
         } else if (line.type ==='link') {
-          return <p key={index}><a href="#">{line.content}</a></p>
+          return <p key={line.content}><a href="#">{line.content}</a></p>
         }
        })}
       </div>
