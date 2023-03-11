@@ -46,8 +46,8 @@ function App() {
         <main>
         {posts.map(post => (
           <Post 
-          data={post} 
-          key={post.id}
+            data={post} 
+            key={post.id}
           />
         ))}
         

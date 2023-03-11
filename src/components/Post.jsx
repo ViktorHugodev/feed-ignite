@@ -27,11 +27,23 @@ export function Post({data}) {
   }
 
   function handleChangeCommentText(){
+    event.target.setCustomValidity('')
     setNewCommentText(event.target.value)
   }
+  function onInvalidCommentText(){
+    event.target.setCustomValidity('Esse campo é obrigatório!')
+  }
 
+  function deleteComment(commentToDelete){
+    const commentsWithoutDeletedOne = comments.filter(comment => {
+      return comment !== commentToDelete
+    })
+    setComments(commentsWithoutDeletedOne)
+ 
+  }
+  const isNewCommentEmpty = newCommentText.length === 0
   return (
-    <article class={styles.post}>
+    <article className={styles.post}>
       <header>
         <div className={styles.author}>
           <Avatar src={data.author.avatarUrl}/>
@@ -47,11 +59,11 @@ export function Post({data}) {
       </header>
 
       <div className={styles.content}>
-       {data.content.map(line => {
+       {data.content.map((line, index ) => {
         if (line.type === 'paragraph'){
-          return <p>{line.content}</p>
+          return <p key={index}>{line.content}</p>
         } else if (line.type ==='link') {
-          return <p><a href="#">{line.content}</a></p>
+          return <p key={index}><a href="#">{line.content}</a></p>
         }
        })}
       </div>
@@ -65,14 +77,22 @@ export function Post({data}) {
           value={newCommentText}
           name="comment"
           placeholder='Deixe um comentário' 
+          onInvalid={onInvalidCommentText}
+          required
         />
         <footer>
-          <button type='submit'>Publicar</button>
+          <button type='submit'
+          disabled={isNewCommentEmpty}
+          >Publicar</button>
         </footer>
       </form>
       <div className={styles.commentList}>
-        {comments.map(comment => {
-          return <Comment content={comment}/>
+        {comments.map((comment, index) => {
+          return <Comment 
+          onDeleteComment={deleteComment}
+          content={comment} 
+          key={index}
+          />
         })}
       </div>
     </article>
